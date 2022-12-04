@@ -28,9 +28,15 @@ namespace OfficesManager.API.Controllers
         {
             var offices = await _officesService.GetAllOffices();
 
-            throw new Exception("Failed to retrieve data");
-
             return Ok(offices);
+        }
+
+        [HttpGet("{startIndex}/{endIndex}")]
+        public async Task<IActionResult> GetOfficeInRange(int startIndex, int endIndex)
+        {
+            var officesInRange = await _officesService.GetOfficeInRange(startIndex, endIndex);
+
+            return Ok(officesInRange);
         }
 
         [HttpGet("{id}", Name = "OfficeById")]
@@ -38,22 +44,12 @@ namespace OfficesManager.API.Controllers
         {
             var office = await _officesService.GetOfficeById(id);
 
-            if (office == null)
-            {
-                return NotFound($"Office with id: {id} doesn't exist in datebase");
-            }
-
             return Ok(office);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOffice([FromBody] OfficeForCreationDto office)
         {
-            if (office == null)
-            {
-                return BadRequest("Object sent from office is null");
-            }
-
             var officeToReturn = await _officesService.CreateOffice(office);
 
             return CreatedAtRoute("OfficeById", new { id = officeToReturn.Id }, officeToReturn);
@@ -62,30 +58,14 @@ namespace OfficesManager.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var isOfficeFound = await _officesService.DeleteOffice(id);
-
-            if (!isOfficeFound)
-            {
-                return NotFound($"Office with id: {id} doesn't exist in the database.");
-            }
-
+            await _officesService.DeleteOffice(id);
             return NoContent();
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateDto office)
         {
-            if (office == null)
-            {
-                return BadRequest("Object sent from office is null");
-            }
-
-            var isOfficeFound = await _officesService.UpdaateOffice(id, office);
-
-            if (!isOfficeFound)
-            {
-                return NotFound($"Office with id: {id} doesn't exist in datebase");
-            }
+            await _officesService.UpdaateOffice(id, office);
 
             return NoContent();
         }
@@ -101,14 +81,5 @@ namespace OfficesManager.API.Controllers
             var token = await _httpClient.PostAsync("https://localhost:7130/api/Account/Login", form);
             return Ok(await token.Content.ReadAsStringAsync());
         }
-        //public async Task<IActionResult> GetToken(string login, string password)
-        //{
-        //    var loginstring = new StringContent(login + password);
-        //    var token = await _httpClient.PostAsync("https://localhost:7130/api/Account/Login", loginstring);
-
-        //    var content = await token.Content.ReadAsStringAsync();
-
-        //    return Ok(content);
-        //}
     }
 }

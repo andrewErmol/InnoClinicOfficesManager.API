@@ -6,7 +6,11 @@ using OfficesManager.Domain;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.Enrich.FromLogContext()
+        .ReadFrom.Configuration(context.Configuration);
+});
 
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
@@ -35,13 +39,6 @@ builder.Services.AddAuthentication("Bearer")
              };
          });
 
-var logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(builder.Configuration)
-        .Enrich.FromLogContext()
-        .CreateLogger();
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(logger);
-
 builder.Services.ConfigureSwagger();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -57,13 +54,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
 app.UseCors("CorsPolicy");
-
-app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
 
 app.UseAuthentication();
 app.UseAuthorization();

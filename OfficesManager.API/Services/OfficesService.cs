@@ -20,8 +20,30 @@ namespace OfficesManager.API.Services
         public async Task<IEnumerable<Office>> GetAllOffices() =>
             await _officesRepository.GetAllOffices(trackChanges: false);
 
-        public async Task<Office> GetOfficeById(Guid id) =>
-            await _officesRepository.GetOffice(id, trackChanges: false);
+        public async Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex)
+        {
+            var officesInRange = await _officesRepository.GetOfficeInRange(startIndex, endIndex, trackChanges: false);
+
+            if (startIndex >= endIndex)
+            {
+                throw new ArgumentException("StartIndex should be less than enIndex"); 
+            }
+
+            return officesInRange;
+        }
+
+        public async Task<Office> GetOfficeById(Guid id)
+        {
+            var office = await _officesRepository.GetOffice(id, trackChanges: false);
+
+            if (office is null)  
+            {
+                throw new NullReferenceException("Office with entered Id does not exsist");
+            }
+
+            return office;
+        }
+            
 
         public async Task<Office> CreateOffice(OfficeForCreationDto officeForCreation)
         {
@@ -33,36 +55,32 @@ namespace OfficesManager.API.Services
             return office;
         }
 
-        public async Task<bool> DeleteOffice(Guid id)
+        public async Task DeleteOffice(Guid id)
         {
             var office = await _officesRepository.GetOffice(id, trackChanges: false);
 
-            if (office == null)
+            if (office is null)
             {
-                return false;
+                throw new NullReferenceException("Office with entered Id does not exsist");
             }
 
             _officesRepository.DeleteOffice(office);
             await _officesRepository.Save();
-
-            return true;
         }
 
-        public async Task<bool> UpdaateOffice(Guid id, OfficeForUpdateDto officeForUpdate)
+        public async Task UpdaateOffice(Guid id, OfficeForUpdateDto officeForUpdate)
         {
             var office = await _officesRepository.GetOffice(id, trackChanges: true);
 
-            if (office == null)
+            if (office is null)
             {
-                return false;
+                throw new NullReferenceException("Office with entered Id does not exsist");
             }
 
             _mapper.Map(officeForUpdate, office);
 
             _officesRepository.UpdateOffice(office);
             await _officesRepository.Save();
-
-            return true;
         }
     }
 }

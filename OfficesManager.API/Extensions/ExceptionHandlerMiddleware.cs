@@ -33,8 +33,21 @@ namespace OfficesManager.API.Extensions
             var errorMessageObject = new { Message = ex.Message, Code = "system_error" };
             var errorMessage = JsonConvert.SerializeObject(errorMessageObject);
             context.Response.ContentType = "application/json";
+
+            if (ex is NullReferenceException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return context.Response.WriteAsync(ex.Message);
+            }
+
+            else if(ex is ArgumentException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return context.Response.WriteAsync(ex.Message);
+            }
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            return context.Response.WriteAsync(errorMessage);
+            return context.Response.WriteAsync("pizda");
         }
     }
 }

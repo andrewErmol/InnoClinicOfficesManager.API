@@ -11,33 +11,42 @@ namespace OfficesManager.Database.Repositories
 {
     public class OfficesRepository : IOfficesRepository
     {
-        private OfficesManagerDbContext OfficesManagerDbContext;
+        private OfficesManagerDbContext _dbContext;
 
-        public OfficesRepository(OfficesManagerDbContext officesManagerDbContext)
+        public OfficesRepository(OfficesManagerDbContext dbContext)
         {
-            OfficesManagerDbContext = officesManagerDbContext;
+            _dbContext = dbContext;
         }
 
         public async Task<IEnumerable<Office>> GetAllOffices (bool trackChanges)
         {
-            IQueryable<Office> offices = !trackChanges ? OfficesManagerDbContext.Offices.AsNoTracking() : OfficesManagerDbContext.Offices;
+            IQueryable<Office> offices = !trackChanges 
+                ? _dbContext.Offices.AsNoTracking() 
+                : _dbContext.Offices;
 
             return await offices.ToListAsync();
         }
 
+        public async Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex, bool trackChanges)
+        {
+            return await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).ToListAsync();
+        }
+
         public async Task<Office> GetOffice(Guid officeId, bool trackChanges)
         {
-            IQueryable<Office> offices = !trackChanges ? OfficesManagerDbContext.Offices.Where(o => o.Id.Equals(officeId)).AsNoTracking() : OfficesManagerDbContext.Offices.Where(o => o.Id.Equals(officeId));
+            IQueryable<Office> offices = !trackChanges 
+                ? _dbContext.Offices.Where(o => o.Id.Equals(officeId)).AsNoTracking() 
+                : _dbContext.Offices.Where(o => o.Id.Equals(officeId));
 
             return await offices.SingleOrDefaultAsync();
         }
 
-        public async Task CreateOffice(Office office) => await OfficesManagerDbContext.Offices.AddAsync(office);
+        public async Task CreateOffice(Office office) => await _dbContext.Offices.AddAsync(office);
 
-        public void DeleteOffice(Office office) => OfficesManagerDbContext.Offices.Remove(office);
+        public void DeleteOffice(Office office) => _dbContext.Offices.Remove(office);
 
-        public void UpdateOffice(Office office) => OfficesManagerDbContext.Offices.Update(office);
+        public void UpdateOffice(Office office) => _dbContext.Offices.Update(office);
 
-        public async Task Save() => await OfficesManagerDbContext.SaveChangesAsync();
+        public async Task Save() => await _dbContext.SaveChangesAsync();   
     }
 }
