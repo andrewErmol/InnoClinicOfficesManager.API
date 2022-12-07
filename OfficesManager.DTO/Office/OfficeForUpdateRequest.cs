@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficesManager.DTO.Office
 {
-    public class OfficeForUpdateDto
+    public class OfficeForUpdateRequest
     {
         public string Address { get; set; }
 

@@ -13,8 +13,8 @@ namespace OfficesManager.Domain
     {
         public MappingProfile()
         {
-            CreateMap<OfficeForUpdateDto, Office>();
-            CreateMap<OfficeForCreationDto, Office>();
+            CreateMap<OfficeForUpdateRequest, Office>();
+            CreateMap<OfficeForCreationRequest, Office>();
         }
     }
 }

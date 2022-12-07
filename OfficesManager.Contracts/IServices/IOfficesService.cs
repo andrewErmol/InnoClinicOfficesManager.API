@@ -13,8 +13,8 @@ namespace OfficesManager.Contracts.IServices
         Task<IEnumerable<Office>> GetAllOffices();
         Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex);
         Task<Office> GetOfficeById(Guid id);
-        Task<Office> CreateOffice(OfficeForCreationDto officeForCreation);
+        Task<Office> CreateOffice(OfficeForCreationRequest officeForCreation);
         Task DeleteOffice(Guid id);
-        Task UpdaateOffice(Guid id, OfficeForUpdateDto officeForUpdate);
+        Task UpdaateOffice(Guid id, OfficeForUpdateRequest officeForUpdate);
     }
 }

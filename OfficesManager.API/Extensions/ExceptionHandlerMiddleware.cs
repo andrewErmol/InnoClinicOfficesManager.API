@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OfficesManager.Domain.MyExceptions;
 using System.Net;
 
 namespace OfficesManager.API.Extensions
@@ -26,28 +27,33 @@ namespace OfficesManager.API.Extensions
             }
         }
 
-
         private Task HandleException(HttpContext context, Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            var errorMessageObject = new { Message = ex.Message, Code = "system_error" };
-            var errorMessage = JsonConvert.SerializeObject(errorMessageObject);
             context.Response.ContentType = "application/json";
 
-            if (ex is NullReferenceException)
+            switch (ex)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return context.Response.WriteAsync(ex.Message);
-            }
+                case NotFoundException:                    
+                    _logger.LogError(ex.ToString());
+                    context.Response.StatusCode = (int)((NotFoundException)ex).StatusCode;
+                    
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)((NotFoundException)ex).StatusCode }));
+                    break;
 
-            else if(ex is ArgumentException)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return context.Response.WriteAsync(ex.Message);
-            }
+                case ArgumentsForPaginationException:
+                    _logger.LogError(ex.ToString());
+                    context.Response.StatusCode = (int)((ArgumentsForPaginationException)ex).StatusCode;
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            return context.Response.WriteAsync("pizda");
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)((ArgumentsForPaginationException)ex).StatusCode }));
+                    break;
+
+                default:
+                    _logger.LogError(ex.ToString());
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)HttpStatusCode.InternalServerError }));
+                    break;
+            }
         }
     }
 }

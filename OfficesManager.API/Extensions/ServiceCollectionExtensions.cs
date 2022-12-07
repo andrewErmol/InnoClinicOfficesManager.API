@@ -23,11 +23,6 @@ namespace OfficesManager.API.Extensions
                 .AllowAnyHeader());
             });
 
-        public static void ConfigureIISIntegration(this IServiceCollection services) =>
-            services.Configure<IISOptions>(options =>
-            {
-            });
-
         public static void ConfigureSqlContext(this IServiceCollection services,
             IConfiguration configuration)
         {

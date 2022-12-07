@@ -31,8 +31,8 @@ namespace OfficesManager.API.Controllers
             return Ok(offices);
         }
 
-        [HttpGet("{startIndex}/{endIndex}")]
-        public async Task<IActionResult> GetOfficeInRange(int startIndex, int endIndex)
+        [HttpGet("pagination")]
+        public async Task<IActionResult> GetOfficeInRange([FromQuery]int startIndex, [FromQuery]int endIndex)
         {
             var officesInRange = await _officesService.GetOfficeInRange(startIndex, endIndex);
 
@@ -48,7 +48,7 @@ namespace OfficesManager.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOffice([FromBody] OfficeForCreationDto office)
+        public async Task<IActionResult> CreateOffice([FromBody] OfficeForCreationRequest office)
         {
             var officeToReturn = await _officesService.CreateOffice(office);
 
@@ -63,7 +63,7 @@ namespace OfficesManager.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateDto office)
+        public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateRequest office)
         {
             await _officesService.UpdaateOffice(id, office);
 

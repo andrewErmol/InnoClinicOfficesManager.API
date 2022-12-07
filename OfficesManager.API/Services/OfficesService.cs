@@ -2,6 +2,7 @@
 using OfficesManager.Contracts.IRepoitories;
 using OfficesManager.Contracts.IServices;
 using OfficesManager.Domain.Model;
+using OfficesManager.Domain.MyExceptions;
 using OfficesManager.DTO.Office;
 
 namespace OfficesManager.API.Services
@@ -26,7 +27,7 @@ namespace OfficesManager.API.Services
 
             if (startIndex >= endIndex)
             {
-                throw new ArgumentException("StartIndex should be less than enIndex"); 
+                throw new ArgumentsForPaginationException("StartIndex should be less than enIndex"); 
             }
 
             return officesInRange;
@@ -38,14 +39,14 @@ namespace OfficesManager.API.Services
 
             if (office is null)  
             {
-                throw new NullReferenceException("Office with entered Id does not exsist");
+                throw new NotFoundException("Office with entered Id does not exsist");
             }
 
             return office;
         }
             
 
-        public async Task<Office> CreateOffice(OfficeForCreationDto officeForCreation)
+        public async Task<Office> CreateOffice(OfficeForCreationRequest officeForCreation)
         {
             var office = _mapper.Map<Office>(officeForCreation);
 
@@ -61,20 +62,20 @@ namespace OfficesManager.API.Services
 
             if (office is null)
             {
-                throw new NullReferenceException("Office with entered Id does not exsist");
+                throw new NotFoundException("Office with entered Id does not exsist");
             }
 
             _officesRepository.DeleteOffice(office);
             await _officesRepository.Save();
         }
 
-        public async Task UpdaateOffice(Guid id, OfficeForUpdateDto officeForUpdate)
+        public async Task UpdaateOffice(Guid id, OfficeForUpdateRequest officeForUpdate)
         {
             var office = await _officesRepository.GetOffice(id, trackChanges: true);
 
             if (office is null)
             {
-                throw new NullReferenceException("Office with entered Id does not exsist");
+                throw new NotFoundException("Office with entered Id does not exsist");
             }
 
             _mapper.Map(officeForUpdate, office);

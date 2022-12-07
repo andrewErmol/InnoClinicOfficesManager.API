@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,6 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\OfficesManager.Contracts\OfficesManager.Contracts.csproj" />
     <ProjectReference Include="..\OfficesManager.Domain\OfficesManager.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="EntityForRepository\" />
   </ItemGroup>
 
 </Project>

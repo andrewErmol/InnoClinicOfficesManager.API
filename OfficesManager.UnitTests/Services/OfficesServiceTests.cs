@@ -213,7 +213,7 @@ namespace OfficesManager.UnitTests.Services
         public async Task CreateOffice_OfficeValid_ReturnsOffice()
         {
             // Arrange
-            OfficeForCreationDto officeForCreation = new OfficeForCreationDto
+            OfficeForCreationRequest officeForCreation = new OfficeForCreationRequest
             {
                 Address = "pr Rechicki 135",
                 PhotoId = new Guid("3e77e8aa-b920-4bca-adb6-4a5e2de117f3"),
@@ -238,7 +238,7 @@ namespace OfficesManager.UnitTests.Services
                 .ThrowsAsync(new Exception());
 
             // Act
-            Task Act() => _officesService.CreateOffice(new OfficeForCreationDto());
+            Task Act() => _officesService.CreateOffice(new OfficeForCreationRequest());
 
             // Assert
             await Assert.ThrowsAsync<Exception>(Act);
@@ -250,7 +250,7 @@ namespace OfficesManager.UnitTests.Services
             // Arrange
             Office office = _testOffices[0];
 
-            OfficeForUpdateDto officeForUpdate = new OfficeForUpdateDto
+            OfficeForUpdateRequest officeForUpdate = new OfficeForUpdateRequest
             {
                 Address = "pr Rechicki 135",
                 PhotoId = new Guid("3e77e8aa-b920-4bca-adb6-4a5e2de117f3"),
@@ -275,7 +275,7 @@ namespace OfficesManager.UnitTests.Services
                 .ReturnsAsync((Office)null);
 
             // Act
-            Task Act() => _officesService.UpdaateOffice(Guid.NewGuid(), new OfficeForUpdateDto());
+            Task Act() => _officesService.UpdaateOffice(Guid.NewGuid(), new OfficeForUpdateRequest());
 
             // Assert
             var result = await Assert.ThrowsAsync<NullReferenceException>(Act);

@@ -3,7 +3,7 @@ using OfficesManager.DTO.Office;
 
 namespace OfficesManager.API.Validators
 {
-    public class OfficeForUpdateDtoValidator : AbstractValidator<OfficeForCreationDto>
+    public class OfficeForUpdateDtoValidator : AbstractValidator<OfficeForCreationRequest>
     {
         public OfficeForUpdateDtoValidator()
         {

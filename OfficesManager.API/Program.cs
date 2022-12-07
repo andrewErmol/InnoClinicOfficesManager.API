@@ -12,15 +12,11 @@ builder.Host.UseSerilog((context, configuration) =>
         .ReadFrom.Configuration(context.Configuration);
 });
 
-builder.Services.ConfigureCors();
-builder.Services.ConfigureIISIntegration();
-
 // Add services to the container.
 
 builder.Services.AddControllers();
 
 builder.Services.ConfigureCors();
-builder.Services.ConfigureIISIntegration();
 
 builder.Services.AddHttpClient();
 
