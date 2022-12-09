@@ -37,6 +37,7 @@ namespace OfficesManager.API.Extensions
             services.AddScoped<IOfficesRepository, OfficesRepository>();
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<OfficeForCreationDtoValidator>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         public static void ConfigureSwagger(this IServiceCollection services)

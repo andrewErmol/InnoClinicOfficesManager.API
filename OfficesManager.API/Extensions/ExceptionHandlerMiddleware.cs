@@ -1,59 +1,66 @@
 ﻿using Newtonsoft.Json;
 using OfficesManager.Domain.MyExceptions;
 using System.Net;
+using Serilog;
 
 namespace OfficesManager.API.Extensions
 {
     public class ExceptionHandlerMiddleware
     {
         public RequestDelegate requestDelegate;
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
+        public IHostEnvironment _env;
 
-        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, ILogger<ExceptionHandlerMiddleware> logger)
+        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, IHostEnvironment env)
         {
             this.requestDelegate = requestDelegate;
-            _logger = logger;
+            _env = env;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {
-                await requestDelegate(context);
+                await requestDelegate.Invoke(httpContext);
+            }
+            catch (NotFoundException ex)
+            {
+                await HandleExceptionAsync(httpContext, ex, HttpStatusCode.NotFound, () => Log.Information(ex, ex.Message));
             }
             catch (Exception ex)
             {
-                await HandleException(context, ex);
+                await HandleExceptionAsync(httpContext, ex, HttpStatusCode.InternalServerError, () => Log.Error(ex, ex.Message));
             }
         }
 
-        private Task HandleException(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code, Action logAction)
         {
-            context.Response.ContentType = "application/json";
+            logAction();
 
-            switch (ex)
+            var response = context.Response;
+            response.ContentType = "application/json";
+            response.StatusCode = (int)code;
+            var allMessageText = GetFullMessage(ex);
+
+            var details = _env.IsDevelopment() ? ex.StackTrace : string.Empty;
+
+            await response.WriteAsync(JsonConvert.SerializeObject(
+                new BaseResponseModel(
+                    code,
+                    allMessageText,
+                    string.IsNullOrEmpty(details)
+                        ? string.Empty
+                        : details)
+                ));
+        }
+
+        private string GetFullMessage(Exception ex)
+        {
+            if (ex.InnerException != null)
             {
-                case NotFoundException:                    
-                    _logger.LogError(ex.ToString());
-                    context.Response.StatusCode = (int)((NotFoundException)ex).StatusCode;
-                    
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)((NotFoundException)ex).StatusCode }));
-                    break;
-
-                case ArgumentsForPaginationException:
-                    _logger.LogError(ex.ToString());
-                    context.Response.StatusCode = (int)((ArgumentsForPaginationException)ex).StatusCode;
-
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)((ArgumentsForPaginationException)ex).StatusCode }));
-                    break;
-
-                default:
-                    _logger.LogError(ex.ToString());
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Message = ex.Message, Code = (int)HttpStatusCode.InternalServerError }));
-                    break;
+                return ex.Message + "; " + GetFullMessage(ex.InnerException);
             }
+
+            return ex.Message;
         }
     }
 }

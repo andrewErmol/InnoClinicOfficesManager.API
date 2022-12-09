@@ -37,8 +37,6 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.ConfigureSwagger();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-
 builder.Services.ConfigureServices();
 
 var app = builder.Build();

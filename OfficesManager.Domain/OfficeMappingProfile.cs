@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace OfficesManager.Domain
 {
-    public class MappingProfile : Profile
+    public class OfficeMappingProfile : Profile
     {
-        public MappingProfile()
+        public OfficeMappingProfile()
         {
             CreateMap<OfficeForUpdateRequest, Office>();
             CreateMap<OfficeForCreationRequest, Office>();

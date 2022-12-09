@@ -9,12 +9,10 @@ namespace OfficesManager.Contracts.IRepoitories
 {
     public interface IOfficesRepository
     {
-        Task<IEnumerable<Office>> GetAllOffices(bool trackChanges);
-        Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex, bool trackChanges);
+        Task<IEnumerable<Office>> GetOffices(int offset, int limit, bool trackChanges);
         Task<Office> GetOffice(Guid officeId, bool trackChanges);
         Task CreateOffice(Office office);
-        void DeleteOffice(Office office);
-        void UpdateOffice(Office office);
-        Task Save();
+        Task DeleteOffice(Office office);
+        Task UpdateOffice(Office office);
     }
 }

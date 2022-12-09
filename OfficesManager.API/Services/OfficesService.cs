@@ -16,19 +16,11 @@ namespace OfficesManager.API.Services
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
-        }
-        
-        public async Task<IEnumerable<Office>> GetAllOffices() =>
-            await _officesRepository.GetAllOffices(trackChanges: false);
+        }           
 
-        public async Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex)
+        public async Task<IEnumerable<Office>> GetOffices(int offset, int limit)
         {
-            var officesInRange = await _officesRepository.GetOfficeInRange(startIndex, endIndex, trackChanges: false);
-
-            if (startIndex >= endIndex)
-            {
-                throw new ArgumentsForPaginationException("StartIndex should be less than enIndex"); 
-            }
+            var officesInRange = await _officesRepository.GetOffices(offset, limit, trackChanges: false);
 
             return officesInRange;
         }
@@ -46,12 +38,9 @@ namespace OfficesManager.API.Services
         }
             
 
-        public async Task<Office> CreateOffice(OfficeForCreationRequest officeForCreation)
+        public async Task<Office> CreateOffice(Office office)
         {
-            var office = _mapper.Map<Office>(officeForCreation);
-
             await _officesRepository.CreateOffice(office);
-            await _officesRepository.Save();
 
             return office;
         }
@@ -66,22 +55,11 @@ namespace OfficesManager.API.Services
             }
 
             _officesRepository.DeleteOffice(office);
-            await _officesRepository.Save();
         }
 
-        public async Task UpdaateOffice(Guid id, OfficeForUpdateRequest officeForUpdate)
+        public async Task UpdateOffice(Office office)
         {
-            var office = await _officesRepository.GetOffice(id, trackChanges: true);
-
-            if (office is null)
-            {
-                throw new NotFoundException("Office with entered Id does not exsist");
-            }
-
-            _mapper.Map(officeForUpdate, office);
-
             _officesRepository.UpdateOffice(office);
-            await _officesRepository.Save();
         }
     }
 }

@@ -20,8 +20,4 @@
     <ProjectReference Include="..\OfficesManager.Domain\OfficesManager.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EntityForRepository\" />
-  </ItemGroup>
-
 </Project>

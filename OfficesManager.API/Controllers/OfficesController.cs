@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficesManager.Contracts.IServices;
+using OfficesManager.Domain.Model;
 using OfficesManager.DTO;
 using OfficesManager.DTO.Office;
 
@@ -14,29 +16,22 @@ namespace OfficesManager.API.Controllers
         private readonly IOfficesService _officesService;
         private readonly HttpClient _httpClient;
         private readonly ILogger<OfficesController> _logger;
+        private readonly IMapper _mapper;
 
-        public OfficesController(IOfficesService officesService, HttpClient httpClient, ILogger<OfficesController> logger)
+        public OfficesController(IOfficesService officesService, HttpClient httpClient, ILogger<OfficesController> logger, IMapper mapper)
         {
             _officesService = officesService;
             _httpClient = httpClient;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        //[Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetOffices([FromQuery]ArgumentsForPagination arg)
         {
-            var offices = await _officesService.GetAllOffices();
+            var offices = await _officesService.GetOffices(arg.offset, arg.limit);
 
             return Ok(offices);
-        }
-
-        [HttpGet("pagination")]
-        public async Task<IActionResult> GetOfficeInRange([FromQuery]int startIndex, [FromQuery]int endIndex)
-        {
-            var officesInRange = await _officesService.GetOfficeInRange(startIndex, endIndex);
-
-            return Ok(officesInRange);
         }
 
         [HttpGet("{id}", Name = "OfficeById")]
@@ -48,8 +43,10 @@ namespace OfficesManager.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOffice([FromBody] OfficeForCreationRequest office)
+        public async Task<IActionResult> CreateOffice([FromBody] OfficeForCreationRequest officeForCreation)
         {
+            var office = _mapper.Map<Office>(officeForCreation);
+
             var officeToReturn = await _officesService.CreateOffice(office);
 
             return CreatedAtRoute("OfficeById", new { id = officeToReturn.Id }, officeToReturn);
@@ -63,9 +60,12 @@ namespace OfficesManager.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateRequest office)
+        public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateRequest officeForUpdate)
         {
-            await _officesService.UpdaateOffice(id, office);
+            var office = await _officesService.GetOfficeById(id);
+            _mapper.Map(officeForUpdate, office);
+
+            await _officesService.UpdateOffice(office);
 
             return NoContent();
         }

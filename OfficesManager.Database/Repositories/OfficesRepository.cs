@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OfficesManager.Contracts.IRepoitories;
+using OfficesManager.Database.EntityForRepository;
 using OfficesManager.Domain.Model;
 using System;
 using System.Collections.Generic;
@@ -12,41 +14,50 @@ namespace OfficesManager.Database.Repositories
     public class OfficesRepository : IOfficesRepository
     {
         private OfficesManagerDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public OfficesRepository(OfficesManagerDbContext dbContext)
+        public OfficesRepository(OfficesManagerDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
-
-        public async Task<IEnumerable<Office>> GetAllOffices (bool trackChanges)
+        public async Task<IEnumerable<Office>> GetOffices(int startIndex, int endIndex, bool trackChanges)
         {
-            IQueryable<Office> offices = !trackChanges 
-                ? _dbContext.Offices.AsNoTracking() 
-                : _dbContext.Offices;
+            IEnumerable<OfficeEntity> officeEntities = !trackChanges
+                ? await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).AsNoTracking().ToListAsync()
+                : await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).ToListAsync();
 
-            return await offices.ToListAsync();
-        }
-
-        public async Task<IEnumerable<Office>> GetOfficeInRange(int startIndex, int endIndex, bool trackChanges)
-        {
-            return await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).ToListAsync();
+            return _mapper.Map<IEnumerable<Office>>(officeEntities);
         }
 
         public async Task<Office> GetOffice(Guid officeId, bool trackChanges)
         {
-            IQueryable<Office> offices = !trackChanges 
-                ? _dbContext.Offices.Where(o => o.Id.Equals(officeId)).AsNoTracking() 
-                : _dbContext.Offices.Where(o => o.Id.Equals(officeId));
+            OfficeEntity officeEntities = !trackChanges
+                ? await _dbContext.Offices.AsNoTracking().FirstOrDefaultAsync(o => o.Id == officeId)
+                : await _dbContext.Offices.FirstOrDefaultAsync(o => o.Id == officeId);
 
-            return await offices.SingleOrDefaultAsync();
+            return _mapper.Map<Office>(officeEntities);
         }
 
-        public async Task CreateOffice(Office office) => await _dbContext.Offices.AddAsync(office);
+        public async Task CreateOffice(Office office)
+        {
+            OfficeEntity officeEntity = _mapper.Map<OfficeEntity>(office);
+            await _dbContext.Offices.AddAsync(officeEntity);
+            await _dbContext.SaveChangesAsync();
+        }
 
-        public void DeleteOffice(Office office) => _dbContext.Offices.Remove(office);
+        public async Task DeleteOffice(Office office)
+        {
+            OfficeEntity officeEntity = _mapper.Map<OfficeEntity>(office);
+            _dbContext.Offices.Remove(officeEntity);
+            await _dbContext.SaveChangesAsync();
+        }
 
-        public void UpdateOffice(Office office) => _dbContext.Offices.Update(office);
-
-        public async Task Save() => await _dbContext.SaveChangesAsync();   
+        public async Task UpdateOffice(Office office)
+        {
+            OfficeEntity officeEntity = _mapper.Map<OfficeEntity>(office);
+            _dbContext.Offices.Update(officeEntity);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

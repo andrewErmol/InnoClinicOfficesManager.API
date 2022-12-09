@@ -9,11 +9,16 @@ namespace OfficesManager.Domain.MyExceptions
 {
     public class NotFoundException : Exception
     {
-        public HttpStatusCode StatusCode { get; set; }
-        public string ErrorMessage { get; set; }
+        public NotFoundException()
+        {
+        }
+
         public NotFoundException(string message) : base(message)
         {
-            StatusCode = HttpStatusCode.NotFound;
+        }
+
+        public NotFoundException(string message, Exception inner) : base(message, inner)
+        {
         }
     }
 }
