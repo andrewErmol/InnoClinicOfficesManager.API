@@ -10,12 +10,10 @@ namespace OfficesManager.API.Services
     public class OfficesService : IOfficesService
     {
         private readonly IOfficesRepository _officesRepository;
-        private readonly IMapper _mapper;
 
-        public OfficesService(IOfficesRepository officesRepository, IMapper mapper)
+        public OfficesService(IOfficesRepository officesRepository)
         {
             _officesRepository = officesRepository;
-            _mapper = mapper;
         }           
 
         public async Task<IEnumerable<Office>> GetOffices(int offset, int limit)
@@ -54,12 +52,12 @@ namespace OfficesManager.API.Services
                 throw new NotFoundException("Office with entered Id does not exsist");
             }
 
-            _officesRepository.DeleteOffice(office);
+            await _officesRepository.DeleteOffice(office);
         }
 
         public async Task UpdateOffice(Office office)
         {
-            _officesRepository.UpdateOffice(office);
+            await _officesRepository.UpdateOffice(office);
         }
     }
 }
