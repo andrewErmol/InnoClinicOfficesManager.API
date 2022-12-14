@@ -7,12 +7,12 @@ namespace OfficesManager.API.Extensions
 {
     public class ExceptionHandlerMiddleware
     {
-        public RequestDelegate requestDelegate;
-        public IHostEnvironment _env;
+        private RequestDelegate _requestDelegate;
+        private IHostEnvironment _env;
 
         public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, IHostEnvironment env)
         {
-            this.requestDelegate = requestDelegate;
+            _requestDelegate = requestDelegate;
             _env = env;
         }
 
@@ -20,7 +20,7 @@ namespace OfficesManager.API.Extensions
         {
             try
             {
-                await requestDelegate.Invoke(httpContext);
+                await _requestDelegate.Invoke(httpContext);
             }
             catch (NotFoundException ex)
             {

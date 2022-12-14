@@ -21,11 +21,11 @@ namespace OfficesManager.Database.Repositories
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<Office>> GetOffices(int startIndex, int endIndex, bool trackChanges)
+        public async Task<IEnumerable<Office>> GetOffices(int offset, int countOfEntities, bool trackChanges)
         {
             IEnumerable<OfficeEntity> officeEntities = !trackChanges
-                ? await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).AsNoTracking().ToListAsync()
-                : await _dbContext.Offices.Skip(startIndex).Take(endIndex - startIndex).ToListAsync();
+                ? await _dbContext.Offices.Skip(offset).Take(countOfEntities).AsNoTracking().ToListAsync()
+                : await _dbContext.Offices.Skip(offset).Take(countOfEntities).ToListAsync();
 
             return _mapper.Map<IEnumerable<Office>>(officeEntities);
         }

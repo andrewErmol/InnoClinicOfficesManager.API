@@ -16,9 +16,10 @@ namespace OfficesManager.API.Services
             _officesRepository = officesRepository;
         }           
 
-        public async Task<IEnumerable<Office>> GetOffices(int offset, int limit)
+        public async Task<IEnumerable<Office>> GetOffices(int pageNumber, int countOfEntities)
         {
-            var officesInRange = await _officesRepository.GetOffices(offset, limit, trackChanges: false);
+            var offset = pageNumber * countOfEntities;
+            var officesInRange = await _officesRepository.GetOffices(offset, countOfEntities, trackChanges: false);
 
             return officesInRange;
         }
@@ -33,8 +34,7 @@ namespace OfficesManager.API.Services
             }
 
             return office;
-        }
-            
+        }            
 
         public async Task<Office> CreateOffice(Office office)
         {

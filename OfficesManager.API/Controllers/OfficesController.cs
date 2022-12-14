@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficesManager.Contracts.IServices;
 using OfficesManager.Domain.Model;
@@ -9,20 +7,18 @@ using OfficesManager.DTO.Office;
 
 namespace OfficesManager.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/offices")]
     [ApiController]
     public class OfficesController : ControllerBase
     {
         private readonly IOfficesService _officesService;
         private readonly HttpClient _httpClient;
-        private readonly ILogger<OfficesController> _logger;
         private readonly IMapper _mapper;
 
         public OfficesController(IOfficesService officesService, HttpClient httpClient, ILogger<OfficesController> logger, IMapper mapper)
         {
             _officesService = officesService;
             _httpClient = httpClient;
-            _logger = logger;
             _mapper = mapper;
         }
 
@@ -34,7 +30,7 @@ namespace OfficesManager.API.Controllers
             return Ok(offices);
         }
 
-        [HttpGet("{id}", Name = "OfficeById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetOffice(Guid id)
         {
             var office = await _officesService.GetOfficeById(id);
@@ -49,13 +45,14 @@ namespace OfficesManager.API.Controllers
 
             var officeToReturn = await _officesService.CreateOffice(office);
 
-            return CreatedAtRoute("OfficeById", new { id = officeToReturn.Id }, officeToReturn);
+            return Ok(officeToReturn.Id);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _officesService.DeleteOffice(id);
+
             return NoContent();
         }
 

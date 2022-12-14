@@ -10,7 +10,7 @@ namespace OfficesManager.Contracts.IServices
 {
     public interface IOfficesService
     {
-        Task<IEnumerable<Office>> GetOffices(int offset, int limit);
+        Task<IEnumerable<Office>> GetOffices(int pageNumber, int countOfEntities);
         Task<Office> GetOfficeById(Guid id);
         Task<Office> CreateOffice(Office office);
         Task DeleteOffice(Guid id);
