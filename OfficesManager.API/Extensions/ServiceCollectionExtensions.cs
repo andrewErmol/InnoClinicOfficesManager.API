@@ -9,6 +9,7 @@ using System.Reflection;
 using OfficesManager.API.Validators;
 using FluentValidation.AspNetCore;
 using Microsoft.OpenApi.Models;
+using MassTransit;
 
 namespace OfficesManager.API.Extensions
 {
@@ -34,10 +35,30 @@ namespace OfficesManager.API.Extensions
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddScoped<IOfficesService, OfficesService>();
+            services.AddScoped<IPublishService, PublishService>();
             services.AddScoped<IOfficesRepository, OfficesRepository>();
+
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<OfficeForCreationDtoValidator>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        }
+
+        public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+        {
+            var config = configuration.GetSection("Messaging");
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(config["Host"], "/", h => {
+                        h.Username(config["UserName"]);
+                        h.Password(config["Password"]);
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
         }
 
         public static void ConfigureSwagger(this IServiceCollection services)

@@ -39,11 +39,13 @@ namespace OfficesManager.Database.Repositories
             return _mapper.Map<Office>(officeEntities);
         }
 
-        public async Task CreateOffice(Office office)
+        public async Task<Guid> CreateOffice(Office office)
         {
             OfficeEntity officeEntity = _mapper.Map<OfficeEntity>(office);
             await _dbContext.Offices.AddAsync(officeEntity);
             await _dbContext.SaveChangesAsync();
+
+            return officeEntity.Id;
         }
 
         public async Task DeleteOffice(Office office)

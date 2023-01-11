@@ -43,9 +43,9 @@ namespace OfficesManager.API.Controllers
         {
             var office = _mapper.Map<Office>(officeForCreation);
 
-            var officeToReturn = await _officesService.CreateOffice(office);
+            var officeIdToReturn = await _officesService.CreateOffice(office);
 
-            return Ok(officeToReturn.Id);
+            return Ok(officeIdToReturn);
         }
 
         [HttpDelete("{id}")]

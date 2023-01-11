@@ -11,7 +11,7 @@ namespace OfficesManager.Contracts.IRepoitories
     {
         Task<IEnumerable<Office>> GetOffices(int offset, int countOfEntities, bool trackChanges);
         Task<Office> GetOffice(Guid officeId, bool trackChanges);
-        Task CreateOffice(Office office);
+        Task<Guid> CreateOffice(Office office);
         Task DeleteOffice(Office office);
         Task UpdateOffice(Office office);
     }

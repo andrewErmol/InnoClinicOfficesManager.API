@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficesManager.DTO", "Offic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficesManager.Database", "OfficesManager.Database\OfficesManager.Database.csproj", "{303D28BA-CDD9-4A5A-B072-7456FBD52CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficesManager.UnitTests", "OfficesManager.UnitTests\OfficesManager.UnitTests.csproj", "{69198CC9-534A-4555-93B1-FB4FA415E285}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficesManager.UnitTests", "OfficesManager.UnitTests\OfficesManager.UnitTests.csproj", "{69198CC9-534A-4555-93B1-FB4FA415E285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

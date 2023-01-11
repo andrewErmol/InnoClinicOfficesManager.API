@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using OfficesManager.API.Extensions;
-using OfficesManager.Domain;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +35,7 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.ConfigureSwagger();
 
 builder.Services.ConfigureServices();
+builder.Services.ConfigureMassTransit(builder.Configuration);
 
 var app = builder.Build();
 

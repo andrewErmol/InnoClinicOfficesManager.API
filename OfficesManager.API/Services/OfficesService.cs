@@ -10,11 +10,13 @@ namespace OfficesManager.API.Services
     public class OfficesService : IOfficesService
     {
         private readonly IOfficesRepository _officesRepository;
+        private readonly IPublishService _publishService;
 
-        public OfficesService(IOfficesRepository officesRepository)
+        public OfficesService(IOfficesRepository officesRepository, IPublishService publishService)
         {
             _officesRepository = officesRepository;
-        }           
+            _publishService = publishService;
+        }
 
         public async Task<IEnumerable<Office>> GetOffices(int pageNumber, int countOfEntities)
         {
@@ -36,11 +38,11 @@ namespace OfficesManager.API.Services
             return office;
         }            
 
-        public async Task<Office> CreateOffice(Office office)
+        public async Task<Guid> CreateOffice(Office office)
         {
-            await _officesRepository.CreateOffice(office);
+            var officeId = await _officesRepository.CreateOffice(office);
 
-            return office;
+            return officeId;
         }
 
         public async Task DeleteOffice(Guid id)
@@ -53,11 +55,13 @@ namespace OfficesManager.API.Services
             }
 
             await _officesRepository.DeleteOffice(office);
+            await _publishService.PublishOfficeDeletedMessage(office);
         }
 
         public async Task UpdateOffice(Office office)
         {
             await _officesRepository.UpdateOffice(office);
+            await _publishService.PublishOfficeUpdatedMessage(office);
         }
     }
 }
