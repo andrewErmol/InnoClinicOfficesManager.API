@@ -1,5 +1,6 @@
 using Microsoft.IdentityModel.Tokens;
 using OfficesManager.API.Extensions;
+using OfficesManager.Database;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,8 +48,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
-
-app.UseHttpsRedirection();
+app.MigrateDatabase();
 
 app.UseStaticFiles();
 
