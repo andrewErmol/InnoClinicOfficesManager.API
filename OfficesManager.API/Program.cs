@@ -5,9 +5,6 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", true, true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
-
 builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.Enrich.FromLogContext()
