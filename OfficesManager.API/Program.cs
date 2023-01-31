@@ -4,11 +4,16 @@ using OfficesManager.Database;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
+
 builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.Enrich.FromLogContext()
         .ReadFrom.Configuration(context.Configuration);
 });
+
 
 // Add services to the container.
 
@@ -46,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
 app.MigrateDatabase();

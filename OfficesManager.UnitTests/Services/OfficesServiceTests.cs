@@ -17,7 +17,7 @@ namespace OfficesManager.UnitTests.Services
         public OfficesServiceTests()
         {
             _officesRepositoryMock = new Mock<IOfficesRepository>();
-            _officesService = new OfficesService(_officesRepositoryMock.Object);
+            _officesService = new OfficesService(_officesRepositoryMock.Object, new Mock<IPublishService>().Object);
         }
 
         private List<Office> _testOffices = new List<Office>
@@ -145,7 +145,7 @@ namespace OfficesManager.UnitTests.Services
             var result = await _officesService.CreateOffice(office);
 
             // Assert
-            result.Should().BeEquivalentTo(office);
+            result.Should().Be(office.Id);
         }
 
         [Fact]
