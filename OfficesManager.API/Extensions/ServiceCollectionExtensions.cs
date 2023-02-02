@@ -28,7 +28,7 @@ namespace OfficesManager.API.Extensions
             IConfiguration configuration)
         {
             services.AddDbContext<OfficesManagerDbContext>(opts =>
-                opts.UseSqlServer(configuration.GetConnectionString("SqlConnection"), b =>
+                opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b =>
                 b.MigrationsAssembly("OfficesManager.Database")));
         }
 
